@@ -31,6 +31,7 @@ TYPE_MAPPING = {
 TYPE_MAPPING_PREFIXES = {
     "Abono ": "DIRECTDEP",
     "Adeudo ": "DIRECTDEBIT",
+    "Retirada de efectivo": "ATM",
 }
 
 
