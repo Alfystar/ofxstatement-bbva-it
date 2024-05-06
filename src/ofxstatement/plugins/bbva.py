@@ -103,9 +103,13 @@ class BBVAParser(StatementParser[str]):
         self._start_row = start_row + 1
         self._start_column = start_column
 
-        for row in self._ws.iter_rows(min_row=self._start_row, min_col=self._start_column):
+        for row in self._ws.iter_rows(
+            min_row=self._start_row, min_col=self._start_column
+        ):
             for cell in row:
-                balance = self.get_field_record(row[self._start_column:], Fields.BALANCE)
+                balance = self.get_field_record(
+                    row[self._start_column :], Fields.BALANCE
+                )
                 if balance:
                     self.statement.start_balance = self.parse_value(balance, "amount")
 
