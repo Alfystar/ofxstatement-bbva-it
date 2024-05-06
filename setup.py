@@ -43,6 +43,7 @@ setup(
     entry_points={
         "ofxstatement": [
             "bbva = ofxstatement.plugins.bbva:BBVAPlugin",
+            "bbva-pdf = ofxstatement.plugins.bbva_pdf:BBVAPdfPlugin",
         ],
     },
     install_requires=["ofxstatement", "openpyxl"],
