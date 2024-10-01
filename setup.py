@@ -4,7 +4,7 @@
 from distutils.core import setup
 from setuptools import find_packages
 
-VERSION = "0.2"
+VERSION = "0.3"
 
 with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
