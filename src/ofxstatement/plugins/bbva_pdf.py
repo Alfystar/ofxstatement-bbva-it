@@ -27,13 +27,17 @@ TYPE_PREFIXES = {
     "TRANSFERENCIAS": ("XFER", True),
     "PAGO CON TARJETA DE": ("PAYMENT", True),
     "PAGO CON TARJETA": ("PAYMENT", True),
+    "COMPRA EN COMERCIO": ("PAYMENT", False),
     "CARGO POR COMPRA CON TARJETA EN": ("POS", True),
     "CARGO POR COMPRA CON TARJETA": ("POS", True),
     "CARGO POR PAGO DE IMPUESTOS - ": ("PAYMENT", True),
     "CARGO POR PAGO DE IMPUESTOS": ("PAYMENT", False),
     "ABONO POR TRANSFERENCIA": ("XFER", False),
     "RETIRADA DE EFECTIVO": ("ATM", False),
+    "RET. EFEC.": ("ATM", False),
     "RET. EFECTIVO": ("ATM", False),
+    "COM. RET. EFEC.": ("FEE", False),
+    "ABONO BONIFICACIÓN": ("FEE", False),
     "BONIFICACIóN PROMOCIóN COMERCIAL": ("FEE", False),
 }
 
