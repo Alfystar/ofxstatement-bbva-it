@@ -31,5 +31,5 @@ machine parse-able data.
 
 This is an experimental plugin, that may not always work but it can be used via:
 
-    ofxstatement -d convert -t bbva-pdf ./dir-containing-all-pdfs
-    ofxstatement -d convert -t bbva-pdf BBVA-20-Q2.pdf
+    ofxstatement -d convert -t bbva-pdf ./dir-containing-all-pdfs BBVA-pdf.ofx
+    ofxstatement -d convert -t bbva-pdf BBVA-20-Q2.pdf BBVA-pdf.ofx
