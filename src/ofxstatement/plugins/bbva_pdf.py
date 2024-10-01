@@ -111,7 +111,9 @@ class BBVAPdfParser(StatementParser):
 
             if line_data and (not line or "SALDO A SU FAVOR" in line):
                 parsed.append(line_data)
-                break
+                line_data = {}
+                found_first_line = False
+                continue
 
             if " HOJA " in line:
                 found_first_line = False
