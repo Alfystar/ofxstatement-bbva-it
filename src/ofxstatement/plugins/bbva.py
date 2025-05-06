@@ -37,13 +37,14 @@ TYPE_MAPPING_PREFIXES = {
 
 
 class Fields(Enum):
+    VALUE_DATE = "F.Valor"
     DATE = "Fecha"
     CONCEPT = "Concepto"
     MOVEMENT = "Movimiento"
-    DESCRIPTION = "Observaciones"
     AMOUNT = "Importe"
     CURRENCY = "Divisa"
     BALANCE = "Disponible"
+    DESCRIPTION = "Observaciones"
 
 
 class BBVAParser(StatementParser[str]):
@@ -78,7 +79,7 @@ class BBVAParser(StatementParser[str]):
                 break
 
         if not found:
-            raise ValueError("No 'Data contabile' cell found")
+            raise ValueError(f"No '{Fields.VALUE_DATE.value}' cell found")
 
         logging.debug(
             "Statement table start cell found at %s",
