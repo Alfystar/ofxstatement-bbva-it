@@ -1,14 +1,11 @@
-import logging
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+import logging
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Iterable, Optional
-
-from openpyxl import load_workbook
-from openpyxl.cell import Cell
-
-from ofxstatement.plugin import Plugin
 from ofxstatement.parser import StatementParser
+from ofxstatement.plugin import Plugin
 from ofxstatement.statement import (
     BankAccount,
     Currency,
@@ -17,6 +14,9 @@ from ofxstatement.statement import (
     generate_transaction_id,
     recalculate_balance,
 )
+from openpyxl import load_workbook
+from openpyxl.cell import Cell
+from typing import Any, Iterable, Optional
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("BBVA")
@@ -35,7 +35,6 @@ TYPE_MAPPING_PREFIXES = {
     "Retirada de efectivo": "ATM",
 }
 
-
 class Fields(Enum):
     VALUE_DATE = "F.Valor"
     DATE = "Fecha"
@@ -45,7 +44,6 @@ class Fields(Enum):
     CURRENCY = "Divisa"
     BALANCE = "Disponible"
     DESCRIPTION = "Observaciones"
-
 
 class BBVAParser(StatementParser[str]):
     date_format = "%d/%m/%Y"
@@ -67,9 +65,7 @@ class BBVAParser(StatementParser[str]):
         fields_values = [f.value.lower() for f in Fields]
         for row in self._ws:
             for cell in row:
-                if isinstance(cell.value, str) and (
-                    cell.value.lower() in fields_values
-                ):
+                if isinstance(cell.value, str) and (cell.value.lower() in fields_values):
                     start_row = cell.row
                     start_column = cell.col_idx - 1
                     found = True
@@ -92,7 +88,8 @@ class BBVAParser(StatementParser[str]):
                     self._fields_to_row[field] = cell.col_idx - start_column - 1
                     break
 
-        logging.debug("Statement table mapping are %s", f"{self._fields_to_row}")
+        logging.debug("Statement table mapping are %s",
+                      f"{self._fields_to_row}")
 
         if not [Fields.DATE] & self._fields_to_row.keys():
             raise ValueError("No date column found")
@@ -106,15 +103,11 @@ class BBVAParser(StatementParser[str]):
         self._start_row = start_row + 1
         self._start_column = start_column
 
-        for row in self._ws.iter_rows(
-            min_row=self._start_row, min_col=self._start_column
-        ):
+        for row in self._ws.iter_rows(min_row=self._start_row, min_col=self._start_column):
             for cell in row:
-                balance = self.get_field_record(
-                    row[self._start_column :], Fields.BALANCE
-                )
+                balance = self.get_field_record(row[self._start_column:], Fields.BALANCE)
                 if balance:
-                    self.statement.start_balance = self.parse_value(balance, "amount")
+                    self.statement.start_balance = self.parse_value(balance,"amount")
 
         if self.statement.account_id:
             logger.debug("Account ID: %s", self.statement.account_id)
@@ -122,9 +115,7 @@ class BBVAParser(StatementParser[str]):
         if self.statement.currency:
             logger.debug("Currency: %s", self.statement.currency)
 
-        self._bank_account = BankAccount(
-            bank_id="MICSITM1XXX", acct_id=self.statement.account_id
-        )
+        self._bank_account = BankAccount(bank_id="MICSITM1XXX", acct_id=self.statement.account_id)
 
         statement = super().parse()
 
@@ -150,7 +141,7 @@ class BBVAParser(StatementParser[str]):
         cells = []
         row = self._start_row
         while True:
-            line_contents = self._ws[row][self._start_column :]
+            line_contents = self._ws[row][self._start_column:]
 
             if not any(cell.value for cell in line_contents):
                 break
@@ -204,17 +195,15 @@ class BBVAParser(StatementParser[str]):
 
     def parse_record(self, cells: Iterable[Cell]) -> StatementLine:
         stat_line = StatementLine(
-            date=self.parse_value(self.get_field_record(cells, Fields.DATE), "date"),
-            amount=self.parse_value(
-                self.get_field_record(cells, Fields.AMOUNT), "amount"
-            ),
+            date=self.parse_value(self.get_field_record(cells, Fields.DATE),"date"),
+            amount=self.parse_value(self.get_field_record(cells, Fields.AMOUNT), "amount"),
         )
 
         concept = self.get_field_record(cells, Fields.CONCEPT)
         movement = self.get_field_record(cells, Fields.MOVEMENT)
         description = self.get_field_record(cells, Fields.DESCRIPTION)
 
-        (stat_line.trntype, type_source) = self.get_transaction_type(concept, movement)
+        (stat_line.trntype, type_source) = self.get_transaction_type(concept,movement)
 
         memo_elements = []
         if type_source != concept:
@@ -227,9 +216,7 @@ class BBVAParser(StatementParser[str]):
 
         stat_line.memo = " - ".join(memo_elements + [description])
 
-        currency = self.parse_value(
-            self.get_field_record(cells, Fields.CURRENCY), "currency"
-        )
+        currency = self.parse_value(self.get_field_record(cells, Fields.CURRENCY), "currency")
         if currency:
             stat_line.currency = Currency(symbol=currency)
 

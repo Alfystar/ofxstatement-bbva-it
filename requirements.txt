@@ -1,0 +1,5 @@
+setuptools>= 80.0
+ofxstatement>=0.6.0
+openpyxl>=3.0.0
+
+

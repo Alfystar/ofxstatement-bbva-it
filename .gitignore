@@ -10,3 +10,7 @@ eggs
 .project
 .pydevproject
 *.sublime*
+.idea
+.vscode
+__pycache__
+**/.DS_store
