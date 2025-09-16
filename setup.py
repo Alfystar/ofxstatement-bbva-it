@@ -1,52 +1,49 @@
-#!/usr/bin/python3
-"""Setup
-"""
-from distutils.core import setup
-from setuptools import find_packages
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-VERSION = "0.5"
-
-with open("README.md", encoding="utf-8") as f:
-    long_description = f.read()
+from setuptools import setup, find_packages
 
 setup(
-    name="ofxstatement-bbva",
-    version=VERSION,
-    author="Marco Trevisan",
-    author_email="mail@3v1n0.net",
-    url="https://github.com/3v1n0/ofxstatement-bbva",
-    description=("BBVA plugin for ofxstatement"),
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    license="GPLv3",
+    name='ofxstatement-bbva',
+    version='0.5.0',
+    author='Marco Trevisan, ea_enel',
+    author_email='mail@3v1n0.net',
+    url='https://github.com/3v1n0/ofxstatement-bbva.git',
+    description='BBVA plugin for ofxstatement with multi-language support (Italian/Spanish)',
+    long_description=open("README.md", encoding="utf-8").read(),
+    long_description_content_type='text/markdown',
+    license='GPLv3',
     keywords=[
-        "ofx",
-        "banking",
-        "statement",
-        "bbva",
-        "banco",
-        "Banco" "Bilbao" "Vizcaya" "Argentaria",
+        'ofx',
+        'ofxstatement',
+        'bbva',
+        'banco',
+        'banking',
+        'statement',
+        'multi-language',
+        'Banco', 'Bilbao', 'Vizcaya', 'Argentaria'
     ],
     classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3",
-        "Natural Language :: English",
-        "Topic :: Office/Business :: Financial :: Accounting",
-        "Topic :: Utilities",
-        "Environment :: Console",
-        "Operating System :: OS Independent",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        'Development Status :: 4 - Beta',
+        'Programming Language :: Python :: 3',
+        'Natural Language :: English',
+        'Natural Language :: Italian',
+        'Natural Language :: Spanish',
+        'Topic :: Office/Business :: Financial :: Accounting',
+        'Topic :: Utilities',
+        'Environment :: Console',
+        'Operating System :: OS Independent',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     ],
-    packages=find_packages("src"),
-    package_dir={"": "src"},
-    namespace_packages=["ofxstatement", "ofxstatement.plugins"],
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     entry_points={
-        "ofxstatement": [
-            "bbva = ofxstatement.plugins.bbva:BBVAPlugin",
-            "bbva-pdf = ofxstatement.plugins.bbva_pdf:BBVAPdfPlugin",
-        ],
+        'ofxstatement': [
+            'bbva = ofxstatement_bbva:BBVAPlugin',
+            'bbva-pdf = ofxstatement_bbva:BBVAPdfPlugin',
+        ]
     },
-    install_requires=["ofxstatement", "openpyxl"],
+    install_requires=['ofxstatement', 'openpyxl'],
     include_package_data=True,
-    zip_safe=True,
+    zip_safe=True
 )
