@@ -39,6 +39,9 @@ TYPE_MAPPING = {
         "Addebito diretto": "DIRECTDEBIT",
         "Accredito stipendio": "DIRECTDEP",
         "Commissioni": "FEE",
+        "Bonus promozione commerciale": "DIRECTDEP",
+        "Liquidazione interessi-commissioni-spese": "DIRECTDEP",
+        "Pagamento imposte": "FEE",
     },
 }
 
@@ -57,6 +60,8 @@ TYPE_MAPPING_PREFIXES = {
         "Prelievo ": "ATM",
         "Commissione ": "FEE",
         "Bonifico ": "XFER",
+        "Bonus ": "DIRECTDEP",
+        "Liquidazione ": "DIRECTDEP",
     },
 }
 
