@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ofxstatement = ">=0.6.0"
+openpyxl = ">=3.0.0"
+ofxstatement-bbva = {editable = true, path = "."}
+
+[dev-packages]
+mypy = "*"
+pytest = "*"
+black = "*"
+build = "*"
+tomli = "*"
+
+[requires]
+python_version = "3.13"

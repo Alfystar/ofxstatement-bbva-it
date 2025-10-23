@@ -12,18 +12,39 @@ pip3 install --user ofxstatement-bbva
 ```
 
 ### From source
+
+```bash
+git clone https://github.com/3v1n0/ofxstatement-bbva.git
+cd ofxstatement-bbva
+
+# Install pipenv if not already installed
+pip3 install --user pipenv
+
+# Install dependencies and the package in editable mode
+pipenv install --dev
+
+# Activate the virtual environment
+pipenv shell
+
+# Build the distribution packages (optional, if you want to create wheel/sdist) from source if shell is not activated
+pipenv run python -m build --sdist --wheel
+```
+
+> **Note**: Using `pipenv install` automatically creates a virtual environment and installs the package in editable mode. This means any changes to the source code will be immediately reflected without reinstalling.
+
+#### Alternative: Install without pipenv
+
+If you prefer not to use pipenv:
+
 ```bash
 git clone https://github.com/3v1n0/ofxstatement-bbva.git
 cd ofxstatement-bbva
 python3 -m venv .venv
-source .venv/bin/activate  # Activates virtual environment
-pip install -r requirements.txt
-pip install build
-python3 -m build --sdist --wheel
-pip install dist/ofxstatement_bbva-<version>.tar.gz # replace <version> with the version number inside setup.py
+source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+pip install -e .
 ```
 
-> **Note**: The above commands install the package in a virtual environment (`.venv`). To install system-wide instead, skip the venv creation and activation steps, and optionally add `--user` flag to install for the current user only.
+> **Note**: The `-e` flag installs the package in editable/development mode.
 
 ## Configuration
 
