@@ -51,8 +51,9 @@ TYPE_MAPPING_PREFIXES = {
         "Abono Bonificación pack": "FEE",
         "Abono ": "DIRECTDEP",
         "Adeudo ": "DIRECTDEBIT",
-        "Retirada de efectivo": "ATM"
-    },
+        "Retirada de efectivo": "ATM",
+        "Cashback": "DIRECTDEP"
+        },
     "it": {  # Italian
         "Trasferimento ": "XFER",
         "Accredito ": "DIRECTDEP",
@@ -62,6 +63,7 @@ TYPE_MAPPING_PREFIXES = {
         "Bonifico ": "XFER",
         "Bonus ": "DIRECTDEP",
         "Liquidazione ": "DIRECTDEP",
+        "Cashback" : "DIRECTDEP"
     },
 }
 
@@ -80,7 +82,7 @@ FIELD_MAPPINGS = {
     "it": {
         "VALUE_DATE": "Data valuta",
         "DATE": "Data",
-        "CONCEPT": "Concetto",
+        "CONCEPT": "Parola chiave",
         "MOVEMENT": "Movimento",
         "AMOUNT": "Importo",
         "CURRENCY": "Valuta",
