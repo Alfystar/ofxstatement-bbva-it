@@ -171,6 +171,9 @@ class BBVAParser(StatementParser):
         if self.fields.DATE not in self._fields_to_row:
             raise ValueError("No date column found")
 
+        if self.fields.VALUE_DATE not in self._fields_to_row:
+            raise ValueError("No value date column found")
+
         if self.fields.AMOUNT not in self._fields_to_row:
             raise ValueError("No amount column found")
 
@@ -272,7 +275,7 @@ class BBVAParser(StatementParser):
 
     def parse_record(self, cells: Iterable[Cell]) -> StatementLine:
         stat_line = StatementLine(
-            date=self.parse_value(self.get_field_record(cells, self.fields.DATE), "date"),
+            date=self.parse_value(self.get_field_record(cells, self.fields.VALUE_DATE), "date"),
             amount=self.parse_value(self.get_field_record(cells, self.fields.AMOUNT), "amount"),
         )
 
