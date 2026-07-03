@@ -67,27 +67,32 @@ TYPE_MAPPING_PREFIXES = {
     },
 }
 
-# Field mappings for different languages
+# Field mappings for different languages.
+# Each field can have multiple possible header names, since BBVA uses
+# different column headers depending on the export source (e.g. desktop
+# web export vs. mobile app export).
 FIELD_MAPPINGS = {
     "es": {
-        "VALUE_DATE": "F.Valor",
-        "DATE": "Fecha",
-        "CONCEPT": "Concepto",
-        "MOVEMENT": "Movimiento",
-        "AMOUNT": "Importe",
-        "CURRENCY": "Divisa",
-        "BALANCE": "Disponible",
-        "DESCRIPTION": "Observaciones"
+        "VALUE_DATE": ("F.Valor",),
+        "DATE": ("Fecha",),
+        "CONCEPT": ("Concepto",),
+        "MOVEMENT": ("Movimiento",),
+        "AMOUNT": ("Importe",),
+        "CURRENCY": ("Divisa",),
+        "BALANCE": ("Disponible",),
+        "DESCRIPTION": ("Observaciones",)
     },
     "it": {
-        "VALUE_DATE": "Data valuta",
-        "DATE": "Data",
-        "CONCEPT": "Parola chiave",
-        "MOVEMENT": "Movimento",
-        "AMOUNT": "Importo",
-        "CURRENCY": "Valuta",
-        "BALANCE": "Disponibile",
-        "DESCRIPTION": "Osservazioni"
+        "VALUE_DATE": ("Data valuta",),
+        "DATE": ("Data",),
+        # "Causale" is used in the mobile app export
+        "CONCEPT": ("Parola chiave", "Causale"),
+        "MOVEMENT": ("Movimento",),
+        "AMOUNT": ("Importo",),
+        "CURRENCY": ("Valuta",),
+        "BALANCE": ("Disponibile",),
+        # "Beneficiario" is used in the mobile app export
+        "DESCRIPTION": ("Osservazioni", "Beneficiario")
     }
 }
 
@@ -136,7 +141,9 @@ class BBVAParser(StatementParser):
     def parse(self) -> Statement:
         found = False
 
-        fields_values = [f.value.lower() for f in self.fields]
+        fields_values = {
+            value.lower() for field in self.fields for value in field.value
+        }
         for row in self._ws:
             for cell in row:
                 if isinstance(cell.value, str) and (
@@ -150,9 +157,10 @@ class BBVAParser(StatementParser):
                 break
 
         if not found:
+            expected = " / ".join(self.fields.VALUE_DATE.value)
             raise ValueError(
                 f"No compatible header cell found for locale '{self.locale}'. "
-                f"Expected '{self.fields.VALUE_DATE.value}' or other field headers.")
+                f"Expected '{expected}' or other field headers.")
 
         logging.debug(
             "Statement table start cell found at %s",
@@ -161,7 +169,7 @@ class BBVAParser(StatementParser):
 
         for field in self.fields:
             for cell in self._ws[start_row][start_column:]:
-                if cell.value == field.value:
+                if cell.value in field.value:
                     self._fields_to_row[field] = cell.col_idx - start_column - 1
                     break
 
@@ -239,6 +247,17 @@ class BBVAParser(StatementParser):
     def strip_spaces(self, string: str):
         return " ".join(string.strip().split())
 
+    def split_amount_currency(self, value: Optional[Any]) -> tuple:
+        """Split values like '3300 EUR' or '-90.8 EUR' (used in the mobile
+        app export, which has no separate currency column) into a numeric
+        amount and a currency code."""
+        if isinstance(value, str):
+            parts = value.strip().split()
+            if len(parts) >= 2 and parts[-1].isalpha():
+                return " ".join(parts[:-1]), parts[-1]
+
+        return value, None
+
     def parse_value(self, value: Optional[Any], field: str) -> Any:
         if field == "amount":
             if isinstance(value, (int, float)):
@@ -257,26 +276,40 @@ class BBVAParser(StatementParser):
         return super().parse_value(value, field)
 
     def get_transaction_type(self, concept, movement) -> tuple:
-        transaction_type = TYPE_MAPPING[self.locale].get(concept)
+        concept = (concept or "").strip()
+        movement = (movement or "").strip()
+
+        type_mapping = {
+            key.lower(): value
+            for key, value in TYPE_MAPPING[self.locale].items()
+        }
+
+        transaction_type = type_mapping.get(concept.lower())
         if transaction_type:
             return (transaction_type, concept)
 
-        transaction_type = TYPE_MAPPING[self.locale].get(movement)
+        transaction_type = type_mapping.get(movement.lower())
         if transaction_type:
             return (transaction_type, movement)
 
         for prefix, transaction_type in TYPE_MAPPING_PREFIXES[
-            self.locale].items():
-            if concept.startswith(prefix):
+                self.locale].items():
+            prefix = prefix.lower()
+            if concept.lower().startswith(prefix):
                 return (transaction_type, concept)
+            if movement.lower().startswith(prefix):
+                return (transaction_type, movement)
 
         logger.warning("Mapping not found for '%s' - '%s'", concept, movement)
         return ("OTHER", None)
 
     def parse_record(self, cells: Iterable[Cell]) -> StatementLine:
+        amount_value, inline_currency = self.split_amount_currency(
+            self.get_field_record(cells, self.fields.AMOUNT))
+
         stat_line = StatementLine(
             date=self.parse_value(self.get_field_record(cells, self.fields.VALUE_DATE), "date"),
-            amount=self.parse_value(self.get_field_record(cells, self.fields.AMOUNT), "amount"),
+            amount=self.parse_value(amount_value, "amount"),
         )
 
         concept = self.get_field_record(cells, self.fields.CONCEPT)
@@ -288,6 +321,9 @@ class BBVAParser(StatementParser):
         stat_line.memo = f"[({type_source})-({movement})] {description}"
 
         currency = self.parse_value(self.get_field_record(cells, self.fields.CURRENCY), "currency")
+        if not currency and inline_currency:
+            currency = inline_currency
+
         if currency:
             stat_line.currency = Currency(symbol=currency)
 
